@@ -18,7 +18,9 @@ For a DiceSet:
  > # OR
  > Dice.roll what: d^6, how_many: 4, keep: 3
 
+```
 
+```
  
  Running 100000 times, taking the top 3, the breakdown of results by value rolled are:
  …………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
