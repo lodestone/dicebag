@@ -12,11 +12,7 @@ class DiceBag
 
   def ^(max)
     @max = max
-    Die.new(max)
-  end
-
-  def d
-    self.instance
+    Die.new(sides: max)
   end
 
   def roll(what: self, plus: 0, keep: nil, how_many: nil)
@@ -37,7 +33,7 @@ end
 
 class Die
 
-  def initialize(sides, plus=0)
+  def initialize(sides: 6, plus: 0)
     @plus = plus
     @sides = sides
     roll
@@ -48,7 +44,7 @@ class Die
     reroll
   end
 
-  def inspect; "d#{@sides}=>#{value}"; end
+  def inspect; "d#{@sides}#{"+#{@plus}" unless @plus.zero?}=>#{value}"; end
 
   def value; @value; end
 
@@ -86,6 +82,8 @@ class DiceSet
     @set.map(&:reroll)
     self
   end
+  
+  def roll; reroll; end
 
   def generate_results
     @results = Hash.new(0)
