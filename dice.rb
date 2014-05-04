@@ -93,24 +93,25 @@ class DiceSet
 
   def graph(r=@results)
     raise "There are no statistical results to graph. Run :generate_results" if r.empty?
-    puts "Running #{@how_many} times, taking the top #{@top_number_of_dice}, the breakdown of results by value rolled are:"
-    puts "…" * 100
+    data = ""
+    data << "Running #{@how_many} times, taking the top #{@top_number_of_dice}, the breakdown of results by value rolled are:"
+    data << "\n" + ("…" * 100) + "\n"
     r.sort.each do |total, count| 
       percentage = (count.to_f/@how_many.to_f)
-      printf "%3d ", total
-      print '('
-      printf "%5.2f", percentage * 100
-      print "%) "
+      data << sprintf("%3d ", total)
+      data << '('
+      data << sprintf("%5.2f", percentage * 100)
+      data << "%) "
       dots = (percentage*500).to_i
       if dots > 100 
-        print '°' * 80 
-        print "*(#{dots})"
+        data << '°' * 80
+        data << "*(#{dots})"
       else
-        print '°' * (percentage*500).to_i
+        data << '°' * (percentage*500).to_i
       end
-      print "\n"
+      data << "\n"
     end
-    self
+    data
   end
 
   def results
