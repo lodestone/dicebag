@@ -6,6 +6,24 @@ module Kernel
   end
 end
 
+class DiceDSL
+
+  def self.parse(dices)
+    %r{^(?<top_or_bottom>t|b)?(?<tb_number>\d)?\[(?<dice>.*)\](?<explode>\*)?(?<plus>\+\d+)?\=?(?<target>.*)?$} =~ dices
+    dice_string=dice.gsub(/\s+/, '').
+      split("+").map{|ds| ds.split('d') }.
+      collect {|how_many, dice_face|(["d^#{dice_face}"]*how_many.to_i).join(",") }.
+      join(",")
+    dice = eval('['+dice_string+']')
+    dice_pool({set: dice, top: tb_number.to_i, plus: plus.to_i})
+  end
+
+  def self.dice_pool(*args)
+    DicePool.new(*args)
+  end
+
+end
+
 class DiceBag
 
   include Singleton
@@ -23,7 +41,7 @@ class DiceBag
     elsif what.is_a? Die
       raise "Must include :how_many if you pass an individual Die" if how_many.nil?
       keep = how_many if keep.nil?
-      DiceSet.new set: how_many.times.collect{ what.clone.reroll }, top: keep, plus: plus
+      DicePool.new set: how_many.times.collect{ what.clone.reroll }, top: keep, plus: plus
     else
       raise what.class.inspect
     end
@@ -58,14 +76,14 @@ class Die
 
 end
 
-class DiceSet
+class DicePool
 
   attr_reader :how_many, :top_number_of_dice, :results
   attr_writer :how_many, :top_number_of_dice, :results
 
   def initialize(set: nil, plus: 0, top: 2)
     @set = set.is_a?(Die) ? [set] : set
-    raise 'Dice passed to DiceSet must be instances of Die.' unless @set.any?{|s| s.is_a?(Die) }
+    raise 'Dice passed to DicePool must be instances of Die.' unless @set.any?{|s| s.is_a?(Die) }
     @plus = plus
     @how_many = 100_000
     @top_number_of_dice = top
@@ -118,15 +136,23 @@ class DiceSet
     "results: #{(@results.sort_by {|k,v| k }).to_h.inspect}"
   end
 
+  def total
+    # @set.map(&:value).inject(0){|sum, i| sum += i} + @plus
+    highest(top: @top_number_of_dice)
+  end
+
   def inspect
-    puts "<DiceSet:\n  @set: #{@set.inspect}>"
+    puts "<DicePool:\n  @set: #{@set.inspect}, @plus: #{@plus}, @total: #{total}, @top: #{@top_number_of_dice}>"
   end
 
   def self.inspect 
-    puts "<DiceSet:\n  @set: #{@set.inspect}>"
+    puts "<DicePool:\n  @set: #{@set.inspect}, @plus: #{@plus}, @total: #{total}, @top: #{@top_number_of_dice}>"
   end
 
 end
 
 
 Dice = DiceBag.instance 
+
+
+# ds=DiceDSL.parse("3[4d6]"); [ds.reroll.total, ds.reroll.total, ds.reroll.total, ds.reroll.total, ds.reroll.total, ds.reroll.total]
