@@ -8,18 +8,26 @@ end
 
 class DiceDSL
 
-  def self.parse(dices)
-    %r{^(?<top_or_bottom>t|b)?(?<tb_number>\d)?\[(?<dice>.*)\](?<explode>\*)?(?<plus>\+\d+)?\=?(?<target>.*)?$} =~ dices
-    dice_string=dice.gsub(/\s+/, '').
-      split("+").map{|ds| ds.split('d') }.
-      collect {|how_many, dice_face|(["d^#{dice_face}"]*how_many.to_i).join(",") }.
-      join(",")
-    dice = eval('['+dice_string+']')
-    dice_pool({set: dice, top: tb_number.to_i, plus: plus.to_i})
-  end
+  class << self
 
-  def self.dice_pool(*args)
-    DicePool.new(*args)
+    def parse(dices)
+      %r{^(?<top_or_bottom>t|b)?(?<tb_number>\d)?\[(?<dice>.*)\](?<explode>\*)?(?<plus>\+\d+)?\=?(?<target>.*)?$} =~ dices
+      die_set = eval "[" + string_to_dice_array(dice) + "]"
+      dice_pool({set: die_set, top: tb_number.to_i, plus: plus.to_i})
+    end
+
+    def dice_pool(*args)
+      DicePool.new(*args)
+    end
+
+    def string_to_dice_array(dice)
+      dice.gsub(/\s+/, '').
+        split("+").
+        map{|ds| ds.split('d') }.
+        collect {|how_many, dice_face| (["d^#{dice_face}"]*how_many.to_i ).join(",") }.
+        join(",")
+    end
+
   end
 
 end
