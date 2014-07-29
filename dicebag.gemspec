@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'dicebag'
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.date        = '2014-05-04'
   s.summary     = "Dice roller and statistic generation"
   s.description = "Roll sets of dice and generate statistical information"
