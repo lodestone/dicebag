@@ -86,7 +86,7 @@ end
 
 class DicePool
 
-  attr_reader :how_many, :top_number_of_dice, :results
+  attr_reader :how_many, :top_number_of_dice, :results, :set
   attr_writer :how_many, :top_number_of_dice, :results
 
   def initialize(set: nil, plus: 0, top: 2)
@@ -95,7 +95,7 @@ class DicePool
     @plus = plus
     @how_many = 100_000
     @top_number_of_dice = top
-    generate_results
+    # generate_results
   end
 
   def highest(top: @top_number_of_dice, re_roll: false)
@@ -103,6 +103,7 @@ class DicePool
     highest_results = @set.sort_by{|d| d.value }.reverse[0..top-1] 
     return highest_results.map(&:to_i).inject(0){|sum,i| sum += i } + @plus
   end
+  alias :result :highest
 
   def reroll
     @set.map(&:reroll)
@@ -138,6 +139,10 @@ class DicePool
       data << "\n"
     end
     data
+  end
+
+  def roll_results
+    @set.inspect
   end
 
   def results
