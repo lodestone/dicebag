@@ -191,4 +191,4 @@ Dice = DiceBag.instance
 
 
 # ds=DiceDSL.parse("3[4d6]"); [ds.reroll.total, ds.reroll.total, ds.reroll.total, ds.reroll.total, ds.reroll.total, ds.reroll.total]
-# h=[]; (2..7).each {|e| (2..7).each {|i| (0..12).each {|plus| 1_000.times {|x| h << DiceDSL.parse("#{e}[#{i}d6]+#{plus}").to_h } } } }
+# h=[]; (2..7).each {|e| (2..7).each {|i| (0..12).each {|plus| 1_000.times {|x| if e > i; e = i; end; h << DiceDSL.parse("#{e}[#{i}d6]+#{plus}").to_h } } } }
